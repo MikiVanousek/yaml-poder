@@ -1,0 +1,11 @@
+episodes_root: /home/miki/voi/eps
+output_root: /www
+url_base: https://pi.vanousek.com
+alternate_link: https://www.vanousek.com
+rss:
+  title: Voice of Miki Vanoušek
+  author:
+    name: Miki Vanoušek
+    email: vanousekmikulas@gmail.com
+  subtitle: Real people and their passions
+  language: en
