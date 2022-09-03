@@ -1,4 +1,4 @@
-import feedgen.feed as fg, yaml, os, re
+import feedgen.feed as fg, yaml, os, re, shutil
 
 def read_yaml_file(location):
     with open(location, "r") as stream:
@@ -23,7 +23,8 @@ def parse_episodes(episodes_root, feed_generator, output_root, url_base):
             print(f'WARNING: Skipping {episode_dir_name}, it does not match the {regex}'
                 + ' regular expression pattern')
             continue
-        if not os.path.exists(os.path.join(episodes_root, episode_dir_name, 'ep.mp3')):
+        episode_sound_location = os.path.join(episodes_root, episode_dir_name, 'ep.mp3')
+        if not os.path.exists(episode_sound_location):
             print(f'WARNING: Skipping {episode_dir_name}, it does not contain ep.mp3')
             continue
         episode_properties_location = os.path.join(episodes_root, episode_dir_name, 'ep.yaml')
@@ -36,16 +37,22 @@ def parse_episodes(episodes_root, feed_generator, output_root, url_base):
         print(f'Adding episode #{name_components[0]} with {guest_name}')
 
         episode_properties = read_yaml_file(episode_properties_location)
+        episode_url = f'{url_base}/eps/{name_components[0]}/ep.mp3'
         fe = feed_generator.add_entry()
-        fe.id(f'{url_base}/eps/{name_components[0]}')
+        fe.id(episode_url)
         fe.title(f'#{name_components[0]}{guest_name}: {episode_properties}')
-        # fe.link(href="http://lernfunk.de/feed")
+        fe.description(episode_properties['description'])
+        fe.enclosure(episode_url, 0, 'audio/mpeg')
 
         destination_directory = os.path.join(output_root, 'eps', name_components[0])
         if os.path.exists(destination_directory):
             # TODO Check last time modified was when this script ran
             print(f'Not copying {episode_dir_name}, because folder already exits')
             continue
+
+        os.chmod(episode_sound_location, 0o777);
+        os.makedirs(destination_directory)
+        os.symlink(episode_sound_location, os.path.join(destination_directory, 'ep.mp3')) 
 
 
 fg = fg.FeedGenerator()
@@ -55,6 +62,9 @@ call_setters(fg, podcast_properties['rss'])
 fg.id(f'{podcast_properties["url_base"]}/atom.xml')
 fg.link(href='https://www.vanousek.com', rel='alternate')
 fg.link(href=f'{podcast_properties["url_base"]}/rss.xml')
+
+if not os.path.exists(podcast_properties['output_root']):
+    raise Exception('The output root directory needs to exist!')
 
 parse_episodes(podcast_properties['episodes_root'], fg,
     podcast_properties['output_root'], podcast_properties['url_base'])
