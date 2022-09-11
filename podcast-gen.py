@@ -1,5 +1,30 @@
 import feedgen.feed as fg, yaml, os, re, shutil
 
+def main():
+    podcast_properties = read_yaml_file('podcast.yaml')
+    # Deletes everything in output directory, so that we have a clean build.
+    if os.path.exists(podcast_properties['output_root']):
+        shutil.rmtree(podcast_properties['output_root'])
+    os.makedirs(podcast_properties['output_root'])
+
+    generator = fg.FeedGenerator()
+    generator.load_extension('podcast')
+    call_setters(generator, podcast_properties['rss'])
+    generator.id(f'{podcast_properties["url_base"]}/atom.xml')
+    generator.link(href='https://www.vanousek.com', rel='alternate')
+    generator.link(href=f'{podcast_properties["url_base"]}/rss.xml')
+
+    if not os.path.exists(podcast_properties['output_root']):
+        # TODO Create output dir instead, ensure permissions
+        raise Exception('The output root directory needs to exist!')
+
+    parse_episodes(podcast_properties['episodes_root'], generator,
+        podcast_properties['output_root'], podcast_properties['url_base'])
+
+    generator.rss_file(os.path.join(podcast_properties['output_root'], 'rss.xml'), pretty=True) # Write the RSS feed to a file
+
+    # generator.atom_file('atom.xml', pretty=True) # Write the ATOM feed to a file
+
 def read_yaml_file(location):
     with open(location, "r") as stream:
         try:
@@ -45,30 +70,8 @@ def parse_episodes(episodes_root, feed_generator, output_root, url_base):
         fe.enclosure(episode_url, 0, 'audio/mpeg')
 
         destination_directory = os.path.join(output_root, 'eps', name_components[0])
-        if os.path.exists(destination_directory):
-            # TODO Check last time modified was when this script ran
-            print(f'Not copying {episode_dir_name}, because folder already exits')
-            continue
-
-        os.chmod(episode_sound_location, 0o777);
         os.makedirs(destination_directory)
         os.symlink(episode_sound_location, os.path.join(destination_directory, 'ep.mp3')) 
 
-
-fg = fg.FeedGenerator()
-# fg.load_extension('podcast')
-podcast_properties = read_yaml_file('podcast.yaml')
-call_setters(fg, podcast_properties['rss'])
-fg.id(f'{podcast_properties["url_base"]}/atom.xml')
-fg.link(href='https://www.vanousek.com', rel='alternate')
-fg.link(href=f'{podcast_properties["url_base"]}/rss.xml')
-
-if not os.path.exists(podcast_properties['output_root']):
-    raise Exception('The output root directory needs to exist!')
-
-parse_episodes(podcast_properties['episodes_root'], fg,
-    podcast_properties['output_root'], podcast_properties['url_base'])
-
-fg.rss_file(os.path.join(podcast_properties['output_root'], 'rss.xml'), pretty=True) # Write the RSS feed to a file
-
-# fg.atom_file('atom.xml', pretty=True) # Write the ATOM feed to a file
+if __name__ == '__main__':
+    main();
