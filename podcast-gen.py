@@ -40,7 +40,7 @@ def parse_episodes(episodes_root, feed_generator, output_root, url_base):
         episode_url = f'{url_base}/eps/{name_components[0]}/ep.mp3'
         fe = feed_generator.add_entry()
         fe.id(episode_url)
-        fe.title(f'#{name_components[0]}{guest_name}: {episode_properties}')
+        fe.title(f'#{name_components[0]}{guest_name}: {episode_properties["hook"]}')
         fe.description(episode_properties['description'])
         fe.enclosure(episode_url, 0, 'audio/mpeg')
 
