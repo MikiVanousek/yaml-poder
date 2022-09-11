@@ -1,4 +1,4 @@
-content_root: /home/miki/voi
+content_root: /var/voi
 episodes_directory: eps
 logo: profile.png
 

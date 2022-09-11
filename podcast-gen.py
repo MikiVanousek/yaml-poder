@@ -1,4 +1,4 @@
-import feedgen.feed as fg, yaml, re, shutil, os, markdown2
+import feedgen.feed as fg, yaml, re, shutil, os
 from os.path import join
 
 
@@ -80,8 +80,7 @@ def parse_episodes(episodes_root,feed_generator, output_root, url_base):
         fe = feed_generator.add_entry()
         fe.id(episode_url)
         fe.title(f'#{name_components[0]} {guest_name}: {episode_properties["hook"]}')
-        compiled_description = markdown2.markdown(episode_properties['description'])
-        fe.description(compiled_description)
+        fe.description(episode_properties['description'])
         fe.enclosure(episode_url, 0, 'audio/mpeg')
 
         # episode_picture_location = join(episodes_root, episode_dir_name, 'ep.jpg')
