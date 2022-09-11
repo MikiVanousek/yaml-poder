@@ -1,4 +1,7 @@
-episodes_root: /var/voi/eps
+content_root: /home/miki/voi
+episodes_directory: eps
+logo: profile.png
+
 output_root: /var/www
 url_base: https://pi.vanousek.com
 alternate_link: https://www.vanousek.com
