@@ -16,6 +16,8 @@ def main():
     generator = fg.FeedGenerator()
     generator.load_extension('podcast')
     call_setters(generator, podcast_properties['rss'])
+    author = podcast_properties['rss']['author']
+    print(author)
     generator.id(f'{url_base}/atom.xml')
     generator.link(href='https://www.vanousek.com', rel='alternate')
     # generator.link(href=f'{url_base}/rss.xml', rel='self')
