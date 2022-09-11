@@ -1,5 +1,5 @@
 episodes_root: /home/miki/voi/eps
-output_root: /www
+output_root: /var/www
 url_base: https://pi.vanousek.com
 alternate_link: https://www.vanousek.com
 rss:
