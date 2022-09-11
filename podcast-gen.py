@@ -1,4 +1,4 @@
-import feedgen.feed as fg, yaml, re, shutil, os
+import feedgen.feed as fg, yaml, re, shutil, os, markdown2
 from os.path import join
 
 
@@ -18,7 +18,7 @@ def main():
     call_setters(generator, podcast_properties['rss'])
     generator.id(f'{url_base}/atom.xml')
     generator.link(href='https://www.vanousek.com', rel='alternate')
-    generator.link(href=f'{url_base}/rss.xml', rel='self')
+    # generator.link(href=f'{url_base}/rss.xml', rel='self')
 
     if not os.path.exists(output_root):
         # TODO Create output dir instead, ensure permissions
@@ -30,6 +30,7 @@ def main():
     if os.path.exists(logo_path):
         os.symlink(logo_path, join(output_root, logo))
         generator.logo(f'{url_base}/{logo}')
+        print(f'Adding {logo} as logo')
     else:
         print(f'WARNING: No logo found at {logo_path}')
 
@@ -44,6 +45,7 @@ def read_yaml_file(location):
         except yaml.YAMLError as exc:
             print(f'Failed to parse {location} yaml file.')
 
+
 def call_setters(object, properties):
     for key, value in properties.items():
         if not hasattr(object, key):
@@ -51,7 +53,6 @@ def call_setters(object, properties):
         setter = getattr(object, key)
         setter(value)
 
-# TODO Ep pic
 def parse_episodes(episodes_root,feed_generator, output_root, url_base):
     regex = '\d{4}([-]\w*)+'
     pattern = re.compile(regex)
@@ -69,7 +70,7 @@ def parse_episodes(episodes_root,feed_generator, output_root, url_base):
         if not os.path.exists(episode_properties_location):
             print(f'WARNING: Skipping {episode_dir_name}, it does not contain ep.yaml')
             continue
-
+            
         name_components = episode_dir_name.split('-')
         guest_name = ' '.join(name_components[1:])
         print(f'Adding episode #{name_components[0]} with {guest_name}')
@@ -78,9 +79,13 @@ def parse_episodes(episodes_root,feed_generator, output_root, url_base):
         episode_url = f'{url_base}/eps/{name_components[0]}/ep.mp3'
         fe = feed_generator.add_entry()
         fe.id(episode_url)
-        fe.title(f'#{name_components[0]}{guest_name}: {episode_properties["hook"]}')
-        fe.description(episode_properties['description'])
+        fe.title(f'#{name_components[0]} {guest_name}: {episode_properties["hook"]}')
+        compiled_description = markdown2.markdown(episode_properties['description'])
+        fe.description(compiled_description)
         fe.enclosure(episode_url, 0, 'audio/mpeg')
+
+        # episode_picture_location = join(episodes_root, episode_dir_name, 'ep.jpg')
+        # if os.path.exists(episode_picture_location):
 
         destination_directory = join(output_root, 'eps', name_components[0])
         os.makedirs(destination_directory)

@@ -1,7 +1,10 @@
 { pkgs ? import <nixpkgs> {} }:
-let
-  pypkgs = pkgs.python310Packages;
-in
   pkgs.mkShell {
-    nativeBuildInputs = [ pypkgs.feedgen pypkgs.markdown2 pypkgs.pyyaml ];
+    nativeBuildInputs = with pkgs; [ 
+      python310
+      python310Packages.markdown
+      python310Packages.feedgen
+      python310Packages.markdown2
+      python310Packages.pyyaml
+    ];
 }
