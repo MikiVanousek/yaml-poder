@@ -3,9 +3,15 @@ import feedgen.feed as fg, yaml, os, re, shutil
 def main():
     podcast_properties = read_yaml_file('podcast.yaml')
     # Deletes everything in output directory, so that we have a clean build.
-    if os.path.exists(podcast_properties['output_root']):
-        shutil.rmtree(podcast_properties['output_root'])
-    os.makedirs(podcast_properties['output_root'])
+    for filename in os.listdir(podcast_properties['output_root']):
+        file_path = os.path.join(podcast_properties['output_root'], filename)
+    try:
+        if os.path.isfile(file_path) or os.path.islink(file_path):
+            os.unlink(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
+    except Exception as e:
+        print('Failed to delete %s. Reason: %s' % (file_path, e))
 
     generator = fg.FeedGenerator()
     generator.load_extension('podcast')
