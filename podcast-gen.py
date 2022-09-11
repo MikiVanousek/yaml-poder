@@ -79,12 +79,12 @@ def parse_episodes(episodes_root,feed_generator, output_root, url_base):
         episode_url = f'{url_base}/eps/{name_components[0]}/ep.mp3'
         fe = feed_generator.add_entry()
         fe.id(episode_url)
-        fe.title(f'#{name_components[0]} {guest_name}: {episode_properties["hook"]}')
+        if episode_properties['hook'] is None:
+            fe.title(f'#{name_components[0]} {guest_name}')
+        else:
+            fe.title(f'#{name_components[0]} {guest_name}: {episode_properties["hook"]}')
         fe.description(episode_properties['description'])
         fe.enclosure(episode_url, 0, 'audio/mpeg')
-
-        # episode_picture_location = join(episodes_root, episode_dir_name, 'ep.jpg')
-        # if os.path.exists(episode_picture_location):
 
         destination_directory = join(output_root, 'eps', name_components[0])
         os.makedirs(destination_directory)
