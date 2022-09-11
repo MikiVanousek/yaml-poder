@@ -1,4 +1,4 @@
-episodes_root: /home/miki/voi/eps
+episodes_root: /var/voi/eps
 output_root: /var/www
 url_base: https://pi.vanousek.com
 alternate_link: https://www.vanousek.com
