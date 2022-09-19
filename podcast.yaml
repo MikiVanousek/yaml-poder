@@ -1,15 +1,15 @@
 content_root: /var/voi
 episodes_directory: eps
 logo: profile.jpg
-
 output_root: /var/www
 url_base: https://pi.vanousek.com
-alternate_link: https://www.vanousek.com
+category: Technology
 rss:
   title: Voice of Miki Vanoušek
-  author:
-    name: Miki Vanoušek
-    email: vanousekmikulas@gmail.com
+  link: https://www.vanousek.com
   description: Podcast from Europe about awesome people and their passions.
   language: en
+  "itunes:owner":
+    "itunes:email": vanousekmikulas@gmail.com
+  "itunes:author": Miki Vanoušek
   "itunes:explicit": yes
