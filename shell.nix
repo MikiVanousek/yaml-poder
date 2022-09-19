@@ -6,5 +6,6 @@
       python310Packages.feedgen
       python310Packages.markdown2
       python310Packages.pyyaml
+      python310Packages.future
     ];
 }

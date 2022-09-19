@@ -1,7 +1,6 @@
 import feedgen.feed as fg, yaml, re, shutil, os
 from os.path import join
 
-
 def main():
     podcast_properties = read_yaml_file('podcast.yaml')
     content_root = podcast_properties['content_root'];
@@ -11,16 +10,15 @@ def main():
     output_root = podcast_properties['output_root']
     url_base = podcast_properties['url_base']
 
-    delete_contents(output_root)    
+    delete_contents(output_root)   
 
     generator = fg.FeedGenerator()
     generator.load_extension('podcast')
+
     call_setters(generator, podcast_properties['rss'])
-    author = podcast_properties['rss']['author']
-    print(author)
+
     generator.id(f'{url_base}/atom.xml')
     generator.link(href='https://www.vanousek.com', rel='alternate')
-    # generator.link(href=f'{url_base}/rss.xml', rel='self')
 
     if not os.path.exists(output_root):
         # TODO Create output dir instead, ensure permissions

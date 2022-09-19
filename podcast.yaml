@@ -1,6 +1,6 @@
 content_root: /var/voi
 episodes_directory: eps
-logo: profile.png
+logo: profile.jpg
 
 output_root: /var/www
 url_base: https://pi.vanousek.com
@@ -10,5 +10,6 @@ rss:
   author:
     name: Miki Vanoušek
     email: vanousekmikulas@gmail.com
-  subtitle: Real people and their passions
+  description: Podcast from Europe about awesome people and their passions.
   language: en
+  "itunes:explicit": yes
