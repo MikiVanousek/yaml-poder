@@ -51,6 +51,7 @@ function main()
 end
 
 
+# TODO pubDate
 function parse_episodes(episodes_root, output_root, url_base, channel_element)
     regex = r"\d{4}([-]\w*)+"
 

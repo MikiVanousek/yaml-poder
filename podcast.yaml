@@ -9,6 +9,7 @@ rss:
   link: https://www.vanousek.com
   description: Podcast from Europe about awesome people and their passions.
   language: en
+  copyright: © 2022 Miki Vanoušek – Licensed under CC BY-SA 4.0
   "itunes:owner":
     "itunes:email": vanousekmikulas@gmail.com
   "itunes:author": Miki Vanoušek
