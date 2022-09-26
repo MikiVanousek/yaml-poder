@@ -33,13 +33,13 @@ function main()
     channel_tag = lx.new_child(rss_tag, "channel")
 
     logo_path = joinpath(content_root, logo)
-    if !isfile(logo_path)
+    if isfile(logo_path)
         println("Adding $logo as logo")
         symlink(logo_path, joinpath(output_root, logo))
         logo_tag = lx.new_child(channel_tag, "itunes:image")
         lx.set_attribute(logo_tag, "href", "$url_base/$logo")
     else
-        print("WARNING: No logo found at $logo_path")
+        println("WARNING: No logo found at $logo_path")
     end
 
     link_tag = lx.new_child(channel_tag, "atom:link")

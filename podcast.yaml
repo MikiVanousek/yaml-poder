@@ -1,6 +1,6 @@
 content_root: /var/voi
 episodes_directory: eps
-logo: profile.jpg
+logo: profile.png
 output_root: /var/www
 url_base: https://pi.vanousek.com
 category: Technology
