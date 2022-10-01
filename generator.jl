@@ -5,22 +5,7 @@ pubdate_format = dateformat"dd-mm-yy";
 iso822_dateformat = dateformat"e, dd u 20yy 00:00 \G\M\T"
 
 function main()
-    force = false
-    content_root = pwd()
-    for arg in ARGS
-        if arg === "-f"
-            force = true
-        elseif isdir(arg)
-            content_root = arg
-        else
-            println("""ERROR: Invalid argument $arg!
-            Usage: julia generator.jl -- [content_root] [-f]
-            content_root: The home of your podcast description and audio files. By default ./ (current directory).
-            -f(orce): Don't ask before deleting the contents of output_root 
-            """)
-        end
-    end
-
+    content_root, force = parse_arguments()
     podcast_properties = YAML.load_file(joinpath(content_root, "podcast.yaml"), dicttype=Dict{String,Any})
     rss = podcast_properties["rss"]
     episodes_root = joinpath(content_root, podcast_properties["episodes_directory"])
@@ -29,7 +14,7 @@ function main()
     url_base = podcast_properties["url_base"]
 
 
-    delete_dir(output_root, force)
+    remove_all_inside(output_root, force)
 
     xdoc = lx.XMLDocument()
     rss_tag = lx.create_root(xdoc, "rss")
@@ -91,8 +76,9 @@ function parse_episodes(episodes_root, output_root, url_base, channel_element)
         guest_name = join(name_components[2:end], " ")
         println("Adding episode #$episode_number with $guest_name")
 
-        episode_properties = YAML.load_file(episode_properties_location; dicttype=Dict{String,Any})
+        episode_properties = YAML.load_file(episode_properties_location)
         episode_url = "$url_base/eps/$episode_number/ep.mp3"
+        dicttype = Dict{String,Any}
         episode_dict["guid"] = episode_url
         if episode_properties["hook"] === nothing
             episode_dict["title"] = "#$episode_number $(guest_name)"
@@ -142,7 +128,27 @@ function set_attributes_recursively(element, attributes)
     end
 end
 
-function delete_dir(output_root, force)
+function parse_arguments()
+    force = false
+    content_root = pwd()
+    for arg in ARGS
+        if arg === "-f"
+            force = true
+        elseif isdir(arg)
+            content_root = arg
+        else
+            println("""ERROR: Invalid argument $(arg)!
+            Usage: julia generator.jl -- [conten_rot] [-f]
+            content_root: The home of your podcast description and audio files. By default ./ (current directory).
+            -f(orce): Don't ask before deleting the contents of output_root 
+            """)
+            exit()
+        end
+    end
+    content_root, force
+end
+
+function remove_all_inside(output_root, force)
     if !isdir(output_root)
         throw(Error("The output root directory needs to exist!"))
     end
