@@ -5,23 +5,32 @@ pubdate_format = dateformat"dd-mm-yy";
 iso822_dateformat = dateformat"e, dd u 20yy 00:00 \G\M\T"
 
 function main()
-    podcast_properties = YAML.load_file("podcast.yaml"; dicttype=Dict{String,Any})
+    force = false
+    content_root = pwd()
+    for arg in ARGS
+        if arg === "-f"
+            force = true
+        elseif isdir(arg)
+            content_root = arg
+        else
+            println("""ERROR: Invalid argument $arg!
+            Usage: julia generator.jl -- [content_root] [-f]
+            content_root: The home of your podcast description and audio files. By default ./ (current directory).
+            -f(orce): Don't ask before deleting the contents of output_root 
+            """)
+        end
+    end
+
+    podcast_properties = YAML.load_file(joinpath(content_root, "podcast.yaml"), dicttype=Dict{String,Any})
     rss = podcast_properties["rss"]
-    content_root = podcast_properties["content_root"]
     episodes_root = joinpath(content_root, podcast_properties["episodes_directory"])
     logo = podcast_properties["logo"]
     output_root = podcast_properties["output_root"]
     url_base = podcast_properties["url_base"]
 
 
-    if !isdir(output_root)
-        throw(Error("The output root directory needs to exist!"))
-    end
-    # Clean up the output_root
-    # TODO Make sure this is desired
-    foreach((d) -> rm(joinpath(output_root, d), recursive=true), readdir(output_root))
+    delete_dir(output_root, force)
 
-    # Generate rss.xml
     xdoc = lx.XMLDocument()
     rss_tag = lx.create_root(xdoc, "rss")
     lx.set_attributes(rss_tag, Dict(
@@ -55,7 +64,6 @@ function main()
 end
 
 
-# TODO pubDate
 function parse_episodes(episodes_root, output_root, url_base, channel_element)
     regex = r"\d{4}([-]\w*)+"
 
@@ -92,6 +100,9 @@ function parse_episodes(episodes_root, output_root, url_base, channel_element)
         else
             episode_dict["title"] = "#$episode_number $guest_name: $(episode_properties["hook"])"
         end
+        if length(episode_properties["description"]) > 1000
+            println("WARNING: Description length exceeds 1000 characters and might get truncated!")
+        end
         episode_dict["description"] = episode_properties["description"]
 
         if haskey(episode_properties, "pubdate") && episode_properties["pubdate"] !== nothing
@@ -99,8 +110,7 @@ function parse_episodes(episodes_root, output_root, url_base, channel_element)
                 pubdate = Date(episode_properties["pubdate"], pubdate_format)
                 episode_dict["pubDate"] = Dates.format(pubdate, iso822_dateformat)
             catch ArgumentError
-                println("ERROR: Failed to parse pubdate of episode #$(episode_number)!")
-                exit()
+                throw(ErrorException("Failed to parse pubdate of episode #$(episode_number)!"))
             end
         else
             println("WARNING: No pubdate found for the episode")
@@ -130,6 +140,21 @@ function set_attributes_recursively(element, attributes)
             throw(Error("Illegal value $value in the data."))
         end
     end
+end
+
+function delete_dir(output_root, force)
+    if !isdir(output_root)
+        throw(Error("The output root directory needs to exist!"))
+    end
+    if !force
+        println("Are you sure everyting in $output_root can be deleted (y/n)? ")
+        if readline() !== "y"
+            println("Goodbye then!")
+            exit()
+        end
+        println("This question can be skipped by passing '-f' as an argument.")
+    end
+    foreach((d) -> rm(joinpath(output_root, d), recursive=true), readdir(output_root))
 end
 
 main()
