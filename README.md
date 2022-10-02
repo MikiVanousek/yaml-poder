@@ -1,8 +1,9 @@
+# YamlPoder
 YamlPoder helps me self-host my podcast.
-It builds the RSS feed and I then use a web-server to make the feed as well as audio files publicly accessible. 
+It builds the RSS feed and I then use a web server to make the feed as well as the audio files publicly accessible.
 
 ## Motivation
-I host [a podcast](https://www.vanousek.com) where I interview the amazing people of this world about their passions and lives.
+I host [a podcast](https://www.vanousek.com/voice) where I interview the amazing people of this world about their passions and lives.
 Most people don't realize this, but you don't upload the episodes of your podcast to every platform it's available on (Spotify, Apple Podcasts, Google Podcasts...).
 The audio is hosted by a provider that charges you for their services.
 Platforms then read all the information about the podcast from an RSS feed, display the information, and allow users to download the audio from the provider.
