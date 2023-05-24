@@ -104,7 +104,7 @@ function parse_episodes(episodes_root, output_root, url_base, channel_element)
 
         destination_directory = joinpath(output_root, "eps", episode_number)
         mkpath(destination_directory)
-        symlink(episode_sound_location, joinpath(destination_directory, "ep.mp3"))
+        hardlink(episode_sound_location, joinpath(destination_directory, "ep.mp3"))
 
         item_tag = lx.new_child(channel_element, "item")
         enclosure_tag = lx.new_child(item_tag, "enclosure")
