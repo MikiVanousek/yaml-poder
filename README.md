@@ -120,7 +120,7 @@ julia -e 'import Pkg; Pkg.add("YAML"); Pkg.add("LightXML")'
 ```
 3. Run the script:
 ```sh
-julia yaml_poder.jl -- [content_root] [-f]
+julia yaml_poder.jl [content_root] [-f]
 ```
 By default, `content_root` is the directory you run the script from.
 If you want to skip the confirmation dialog for deleting everything in `output_root`, add `-f` (as in force).
